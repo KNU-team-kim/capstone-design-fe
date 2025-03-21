@@ -1,16 +1,17 @@
-import { useEffect, useRef } from 'react';
+import { connectSignalingServer } from '@/utils/signaling';
+import { useEffect, useRef, useState } from 'react';
 
 const iceServers = {
   iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
 };
 
 export const useWebRTC = () => {
+  const [isConnected, setIsConnected] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const peerConnection = useRef<RTCPeerConnection | null>(null);
+  const socket = useRef<WebSocket | null>(null);
 
   useEffect(() => {
-    peerConnection.current = new RTCPeerConnection(iceServers);
-
     const getWebcamStream = async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -26,14 +27,22 @@ export const useWebRTC = () => {
       }
     };
 
+    socket.current = connectSignalingServer(() => {});
+    setIsConnected(true);
+
+    peerConnection.current = new RTCPeerConnection(iceServers);
+
     getWebcamStream();
 
     return () => {
       if (peerConnection.current) {
         peerConnection.current.close();
       }
+      if (socket.current) {
+        socket.current.close();
+      }
     };
   }, []);
 
-  return { videoRef };
+  return { videoRef, isConnected };
 };
