@@ -8,7 +8,7 @@ const iceServers = {
 
 export const useWebRTC = () => {
   const [isConnected, setIsConnected] = useState(false);
-  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const videoRef = useRef<(HTMLVideoElement | null)[]>([]);
   const peerConnection = useRef<RTCPeerConnection | null>(null);
   const socket = useRef<WebSocket | null>(null);
 
@@ -42,13 +42,18 @@ export const useWebRTC = () => {
 
     const getWebcamStream = async () => {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        if (videoRef.current) videoRef.current.srcObject = stream;
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoDevices = devices.filter(device => device.kind === 'videoinput');
+        
+        const streams = await Promise.all(videoDevices.map(device =>
+          navigator.mediaDevices.getUserMedia({
+            video: { deviceId: { exact: device.deviceId } }
+          })
+        ));
 
-        stream.getTracks().forEach((track) => {
-          if (peerConnection.current?.signalingState !== 'closed') {
-            peerConnection.current?.addTrack(track, stream);
-          }
+        streams.forEach((stream, index) => {
+          if (videoRef.current[index]) videoRef.current[index].srcObject = stream;
+          stream.getTracks().forEach(track => peerConnection.current?.addTrack(track, stream));
         });
       } catch (err) {
         console.error('웹캠 접근 오류:', err);
