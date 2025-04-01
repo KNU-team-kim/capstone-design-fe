@@ -1,71 +1,73 @@
-import { connectSignalingServer, sendMessage, closeSignalingServer } from '@/utils/signaling';
-import { useEffect, useRef, useState } from 'react';
-import { SignalingMessage } from '@/types/signaling';
+import { useEffect, useRef, useState } from 'react'
 
-const iceServers = {
-  iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
-};
+import { Client } from '@stomp/stompjs'
 
-export const useWebRTC = () => {
-  const [isConnected, setIsConnected] = useState(false);
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const peerConnection = useRef<RTCPeerConnection | null>(null);
-  const socket = useRef<WebSocket | null>(null);
+import { setupICEHandlers } from './webrtc/useICEHandler'
+import { setupMediaDevices } from './webrtc/useMediaDevices'
+import { useSignalingHandler } from './webrtc/useSignalingHandler'
+
+export const useWebRTC = (camNum: string = '1') => {
+  const [isConnected, setIsConnected] = useState(false)
+  const [connectionState, setConnectionState] = useState<string>('new')
+  const videoRef = useRef<(HTMLVideoElement | null)[]>([])
+  const peerConnection = useRef<RTCPeerConnection | null>(null)
+  const stompClient = useRef<Client | null>(null)
+  const gatheredCandidates = useRef<RTCIceCandidate[]>([])
+  const pendingIceCandidates = useRef<RTCIceCandidate[]>([])
+  const hasRemoteDescription = useRef<boolean>(false)
 
   useEffect(() => {
-    const handleSignalingMessage = async (message: SignalingMessage) => {
-      switch (message.type) {
-        case 'offer':
-          await peerConnection.current?.setRemoteDescription(new RTCSessionDescription(message.offer));
-          const answer = await peerConnection.current?.createAnswer();
-          await peerConnection.current?.setLocalDescription(answer);
-          if (socket.current && answer) {
-            sendMessage(socket.current, { type: 'answer', answer });
-          }
-          break;
-        case 'answer':
-          await peerConnection.current?.setRemoteDescription(new RTCSessionDescription(message.answer));
-          break;
-        case 'ice-candidate':
-          const candidate = new RTCIceCandidate(message.candidate);
-          await peerConnection.current?.addIceCandidate(candidate);
-          break;
-        default:
-          break;
+    const init = async () => {
+      peerConnection.current = new RTCPeerConnection({
+        iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
+      })
+
+      stompClient.current = await useSignalingHandler({
+        peerConnection,
+        camNum,
+        pendingIceCandidates,
+        hasRemoteDescription,
+      })
+
+      setupICEHandlers({
+        peerConnection: peerConnection.current,
+        stompClient: stompClient.current,
+        camNum,
+        gatheredCandidates: gatheredCandidates.current,
+      })
+
+      await setupMediaDevices({
+        peerConnection: peerConnection.current,
+        videoRef,
+        camNum,
+      })
+
+      peerConnection.current.oniceconnectionstatechange = () => {
+        const state = peerConnection.current?.iceConnectionState || 'unknown'
+        setConnectionState(state)
+        setIsConnected(state === 'connected' || state === 'completed')
       }
-    };
+    }
 
-    socket.current = connectSignalingServer(handleSignalingMessage);
-    setIsConnected(true);
-
-    peerConnection.current = new RTCPeerConnection(iceServers);
-
-    const getWebcamStream = async () => {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        if (videoRef.current) videoRef.current.srcObject = stream;
-
-        stream.getTracks().forEach((track) => {
-          if (peerConnection.current?.signalingState !== 'closed') {
-            peerConnection.current?.addTrack(track, stream);
-          }
-        });
-      } catch (err) {
-        console.error('웹캠 접근 오류:', err);
-      }
-    };
-
-    getWebcamStream();
+    init()
 
     return () => {
-      if (peerConnection.current) {
-        peerConnection.current.close();
-      }
-      if (socket.current) {
-        closeSignalingServer(socket.current);
-      }
-    };
-  }, []);
+      peerConnection.current
+        ?.getSenders()
+        .forEach((sender) => sender.track?.stop())
+      videoRef.current.forEach((videoEl) => {
+        if (videoEl) videoEl.srcObject = null
+      })
+      peerConnection.current?.close()
+      stompClient.current?.deactivate()
+      peerConnection.current = null
+      stompClient.current = null
+      gatheredCandidates.current = []
+      pendingIceCandidates.current = []
+      hasRemoteDescription.current = false
+      setIsConnected(false)
+    }
+  }, [camNum])
 
-  return { videoRef, isConnected };
-};
+  return { videoRef, isConnected, connectionState }
+}
