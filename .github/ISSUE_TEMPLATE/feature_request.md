@@ -4,7 +4,6 @@ about: 기능 구현
 title: ''
 labels: ''
 assignees: ''
-
 ---
 
 ## Description
@@ -18,4 +17,5 @@ assignees: ''
 - [ ] TO DO
 
 ## ETC
+
 > 기타사항
