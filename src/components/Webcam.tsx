@@ -11,10 +11,13 @@ const Webcam = () => {
         <h1>WebRTC 연동</h1>
         <video
           ref={(el) => {
-            videoRef.current[0] = el
+            if (videoRef.current) {
+              videoRef.current[0] = el
+            }
           }}
           autoPlay
           playsInline
+          muted
           width="300"
         />
       </div>
@@ -22,10 +25,13 @@ const Webcam = () => {
         <h1>OBS 가상 카메라</h1>
         <video
           ref={(el) => {
-            videoRef.current[1] = el
+            if (videoRef.current) {
+              videoRef.current[1] = el
+            }
           }}
           autoPlay
           playsInline
+          muted
           width="300"
         />
       </div>
