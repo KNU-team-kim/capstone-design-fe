@@ -12,12 +12,11 @@
     "format": "prettier --write ."
   },
   "dependencies": {
-<<<<<<< HEAD
-    "@chakra-ui/react": "^3.14.2",
-    "@emotion/react": "^11.14.0",
-=======
+    "@chakra-ui/react": "^2.8.1",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
     "@stomp/stompjs": "^7.1.0",
->>>>>>> a38183dd913164e149ac2d08ecfbeff4c22ea7ed
+    "framer-motion": "^10.12.16",
     "next": "^15.2.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
