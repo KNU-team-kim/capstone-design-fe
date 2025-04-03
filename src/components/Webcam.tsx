@@ -6,35 +6,43 @@ const Webcam = () => {
   const { videoRef } = useWebRTC()
 
   return (
-    <div>
-      <div>
-        <h1>WebRTC 연동</h1>
-        <video
-          ref={(el) => {
-            if (videoRef.current) {
-              videoRef.current[0] = el
-            }
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        gridTemplateRows: '1fr 1fr',
+        gap: '10px',
+        width: '90vw',
+        maxWidth: '960px',
+      }}
+    >
+      {[0, 1, 2, 3].map((index) => (
+        <div
+          key={index}
+          style={{
+            width: '100%',
+            height: '100%',
+            backgroundColor: '#000000',
+            borderRadius: '8px',
+            overflow: 'hidden',
+            aspectRatio: '4 / 3',
           }}
-          autoPlay
-          playsInline
-          muted
-          width="300"
-        />
-      </div>
-      <div>
-        <h1>OBS 가상 카메라</h1>
-        <video
-          ref={(el) => {
-            if (videoRef.current) {
-              videoRef.current[1] = el
-            }
-          }}
-          autoPlay
-          playsInline
-          muted
-          width="300"
-        />
-      </div>
+        >
+          <video
+            ref={(el) => {
+              if (el) videoRef.current[index] = el
+            }}
+            autoPlay
+            playsInline
+            muted
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+            }}
+          />
+        </div>
+      ))}
     </div>
   )
 }
