@@ -9,7 +9,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" style={{ overflow: 'hidden' }}>
+    <html lang="kr" style={{ overflow: 'hidden' }}>
       <body
         style={{
           display: 'flex',
