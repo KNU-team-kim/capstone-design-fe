@@ -11,11 +11,20 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html>
-      <body>
-        <div>
-          <ChakraWrapper>{children}</ChakraWrapper>
-        </div>
+
+    <html lang="kr" style={{ overflow: 'hidden' }}>
+      <body
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+          width: '100vw',
+          margin: 0,
+          backgroundColor: '#1a202c',
+        }}
+      >
+        {children}
       </body>
     </html>
   )

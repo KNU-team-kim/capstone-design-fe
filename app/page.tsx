@@ -1,6 +1,6 @@
 import Webcam from '@/components/Webcam'
 
-export default function HomePage() {
+export default function MainPage() {
   return (
     <main>
       <Webcam />
