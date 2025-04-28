@@ -2,7 +2,7 @@
 
 import { Badge } from '@chakra-ui/react'
 
-type Direction = 'front' | 'behind' | 'left' | 'right'
+type Direction = 'front' | 'back' | 'left' | 'right'
 
 interface Props {
   direction: Direction
@@ -11,7 +11,7 @@ interface Props {
 const directionColorMap: Record<Direction, string> = {
   // 색상 팔레트 추가 후 수정하기
   front: 'gray',
-  behind: 'gray',
+  back: 'gray',
   left: 'gray',
   right: 'gray',
 }

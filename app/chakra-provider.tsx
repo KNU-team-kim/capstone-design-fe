@@ -2,10 +2,8 @@
 
 import { ReactNode } from 'react'
 
-import { ChakraProvider, extendTheme } from '@chakra-ui/react'
-
-const theme = extendTheme({})
+import { ChakraProvider } from '@chakra-ui/react'
 
 export default function ChakraWrapper({ children }: { children: ReactNode }) {
-  return <ChakraProvider theme={theme}>{children}</ChakraProvider>
+  return <ChakraProvider>{children}</ChakraProvider>
 }

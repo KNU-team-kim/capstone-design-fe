@@ -1,21 +1,20 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-
+import DirectionTag from '@/components/DirectionTag'
 import { useWebRTC } from '@/hooks/useWebRTC'
 
 const Webcam = () => {
-  const { videoRef } = useWebRTC()
-  const [hasSignal, setHasSignal] = useState([false, false, false, false])
+  const front = useWebRTC('front')
+  const right = useWebRTC('right')
+  const left = useWebRTC('left')
+  const back = useWebRTC('back')
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const status = videoRef.current.map((ref) => !!ref?.srcObject)
-      setHasSignal(status)
-    }, 1000)
-
-    return () => clearInterval(interval)
-  }, [videoRef])
+  const streams = [
+    { ref: front.videoRef, direction: 'front' as const },
+    { ref: right.videoRef, direction: 'right' as const },
+    { ref: left.videoRef, direction: 'left' as const },
+    { ref: back.videoRef, direction: 'back' as const },
+  ]
 
   return (
     <div
@@ -25,10 +24,10 @@ const Webcam = () => {
         gridTemplateRows: '1fr 1fr',
         gap: '10px',
         width: '90vw',
-        maxWidth: '960px',
+        maxWidth: '1460px',
       }}
     >
-      {[0, 1, 2, 3].map((index) => (
+      {streams.map(({ ref, direction }, index) => (
         <div
           key={index}
           style={{
@@ -38,28 +37,14 @@ const Webcam = () => {
             backgroundColor: '#000000',
             borderRadius: '8px',
             overflow: 'hidden',
-            aspectRatio: '4 / 3',
+            aspectRatio: '16 / 9',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
           }}
         >
-          {!hasSignal[index] && (
-            <div
-              style={{
-                color: '#BFBFBF',
-                fontSize: '20px',
-                position: 'absolute',
-                textAlign: 'center',
-              }}
-            >
-              신호 없음
-            </div>
-          )}
           <video
-            ref={(el) => {
-              if (el) videoRef.current[index] = el
-            }}
+            ref={ref}
             autoPlay
             playsInline
             muted
@@ -69,6 +54,15 @@ const Webcam = () => {
               objectFit: 'cover',
             }}
           />
+          <div
+            style={{
+              position: 'absolute',
+              bottom: '8px',
+              right: '8px',
+            }}
+          >
+            <DirectionTag direction={direction} />
+          </div>
         </div>
       ))}
     </div>
