@@ -11,7 +11,6 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-
     <html lang="kr" style={{ overflow: 'hidden' }}>
       <body
         style={{
