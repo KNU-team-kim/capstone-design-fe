@@ -1,5 +1,6 @@
 'use client'
 
+import DelayLabel from '@/components/DelayLabel'
 import DirectionTag from '@/components/DirectionTag'
 import { useWebRTC } from '@/hooks/useWebRTC'
 
@@ -62,6 +63,15 @@ const Webcam = () => {
             }}
           >
             <DirectionTag direction={direction} />
+          </div>
+          <div
+            style={{
+              position: 'absolute',
+              top: '8px',
+              left: '8px',
+            }}
+          >
+            <DelayLabel delay={0.43} />
           </div>
         </div>
       ))}
