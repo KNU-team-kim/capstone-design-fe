@@ -17,6 +17,7 @@ const DelayLabel = ({ delay }: Props) => {
       py={1}
       fontSize="sm"
       fontWeight="medium"
+      opacity={0.8}
     >
       <HStack spacing={1} align="center">
         <IoTimerOutline />
