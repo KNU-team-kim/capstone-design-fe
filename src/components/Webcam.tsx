@@ -25,6 +25,7 @@ const Webcam = () => {
         gap: '10px',
         width: '90vw',
         maxWidth: '1460px',
+        maxHeight: 'calc(100vh - 120px)',
       }}
     >
       {streams.map(({ ref, direction }, index) => (
