@@ -1,5 +1,5 @@
-
 import TabBar from '@/components/TabBar'
+
 import ChakraWrapper from './chakra-provider'
 
 export const metadata = {
