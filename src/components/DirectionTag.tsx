@@ -27,6 +27,7 @@ const DirectionTag = ({ direction }: Props) => {
       fontWeight="medium"
       fontSize="sm"
       textTransform="none"
+      opacity={0.8}
     >
       {direction}
     </Badge>
