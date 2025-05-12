@@ -138,13 +138,9 @@ const Webcam = () => {
   return (
     <div
       style={{
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
-        gridTemplateRows: '1fr 1fr',
-        gap: '10px',
-        width: '90vw',
-        maxWidth: '1460px',
-        maxHeight: 'calc(100vh - 120px)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
       }}
     >
       <div
@@ -155,6 +151,7 @@ const Webcam = () => {
           gap: '10px',
           width: '90vw',
           maxWidth: '1460px',
+          maxHeight: 'calc(100vh - 120px)',
         }}
       >
         {streams.map(({ ref, direction }, index) => (
@@ -164,14 +161,13 @@ const Webcam = () => {
               position: 'relative',
               width: '100%',
               height: '100%',
-              objectFit: 'contain',
-            }}
-          />
-          <div
-            style={{
-              position: 'absolute',
-              bottom: '8px',
-              right: '8px',
+              backgroundColor: '#000',
+              borderRadius: '8px',
+              overflow: 'hidden',
+              aspectRatio: '16 / 9',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
             <video
