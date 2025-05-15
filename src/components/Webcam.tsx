@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 
 import DirectionTag from '@/components/DirectionTag'
 import { useWebRTC } from '@/hooks/useWebRTC'
@@ -14,7 +14,7 @@ const Webcam = () => {
   const leftLogsRef = useRef<string[]>([])
   const backLogsRef = useRef<string[]>([])
   const frontLogsRef = useRef<string[]>([])
-  const [isReady, setIsReady] = useState(false)
+  //const [isReady, setIsReady] = useState(false)
 
   const detectColorChange = (video: HTMLVideoElement, direction: string) => {
     const canvas = document.createElement('canvas')
@@ -100,33 +100,16 @@ const Webcam = () => {
         detectColorChange(front.videoRef.current, 'front')
         detectColorChange(right.videoRef.current, 'right')
         clearInterval(checkReadyInterval)
-        setIsReady(true)
+        //
       }
     }, 500)
     return () => clearInterval(checkReadyInterval)
-  }, [])
-
-  const downloadLogFile = (direction: 'left' | 'back' | 'front') => {
-    let logs: string[] = []
-    if (direction === 'left') {
-      logs = leftLogsRef.current
-    } else if (direction === 'back') {
-      logs = backLogsRef.current
-    } else if (direction === 'front') {
-      logs = frontLogsRef.current
-    }
-    if (!logs.length) {
-      alert(`${direction.toUpperCase()} 로그가 없습니다.`)
-      return
-    }
-    const blob = new Blob([logs.join('\n')], { type: 'text/plain' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `${direction}-color-change-log.txt`
-    a.click()
-    URL.revokeObjectURL(url)
-  }
+  }, [
+    left.videoRef.current,
+    back.videoRef.current,
+    front.videoRef.current,
+    right.videoRef.current,
+  ])
 
   const streams = [
     { ref: front.videoRef, direction: 'front' as const },
