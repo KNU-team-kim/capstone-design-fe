@@ -11,6 +11,11 @@ export default function RecordPage() {
 
   const { data, isLoading } = useLogQuery(currentPage - 1, pageSize)
 
+  const handlePageChange = (page: number, size: number) => {
+    setCurrentPage(page)
+    setPageSize(size)
+  }
+
   return (
     <div style={{ width: '95%', maxWidth: '1440px', padding: '0 4px' }}>
       {!isLoading && data && (
@@ -19,7 +24,7 @@ export default function RecordPage() {
           total={data.totalPage * pageSize}
           pageSize={pageSize}
           current={currentPage}
-          onPageChange={() => {}}
+          onPageChange={handlePageChange}
         />
       )}
     </div>

@@ -41,11 +41,26 @@ const RecordTable = ({
       key: 'label',
       width: 640,
       render: (classes: string[]) => (
-        <div>
-          {classes.map((cls, index) => {
-            const label = cls.toLowerCase().replace(/_/g, ' ')
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '4px',
+            maxWidth: '100%',
+          }}
+        >
+          {classes.map((cls) => {
+            const lower = cls.toLowerCase()
+            const label = lower.replace(/_/g, ' ')
             return (
-              <span key={index} style={{ marginRight: 8, fontSize: '12px' }}>
+              <span
+                key={cls}
+                style={{
+                  borderRadius: '17px',
+                  fontSize: '11px',
+                  padding: '0 6px',
+                }}
+              >
                 {label}
               </span>
             )
@@ -89,7 +104,14 @@ const RecordTable = ({
           columns={columns}
           dataSource={logs}
           size="small"
-          pagination={false}
+          pagination={{
+            pageSize,
+            total,
+            current,
+            onChange: onPageChange,
+            showSizeChanger: false,
+            position: ['bottomCenter'],
+          }}
         />
       </div>
     </div>
