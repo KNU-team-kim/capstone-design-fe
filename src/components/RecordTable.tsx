@@ -1,6 +1,6 @@
 'use client'
 
-import { Table } from 'antd'
+import { Table, Tag } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 
 import { LogEntry } from '@/hooks/useLog'
@@ -11,6 +11,16 @@ interface Props {
   pageSize: number
   current: number
   onPageChange: (page: number, pageSize: number) => void
+}
+
+const classColorMap: Record<string, string> = {
+  tree: 'green',
+  paper_box: 'blue',
+  traffic_sign: 'volcano',
+  container: 'purple',
+  plastic: 'cyan',
+  disposable_cup: 'geekblue',
+  wooden_building: 'gold',
 }
 
 const RecordTable = ({
@@ -33,7 +43,7 @@ const RecordTable = ({
       dataIndex: 'direction',
       key: 'direction',
       width: 100,
-      render: (text) => <span>{text.toLowerCase()}</span>,
+      render: (text) => <Tag>{text.toLowerCase()}</Tag>,
     },
     {
       title: 'Label',
@@ -52,17 +62,23 @@ const RecordTable = ({
           {classes.map((cls) => {
             const lower = cls.toLowerCase()
             const label = lower.replace(/_/g, ' ')
+            const color = classColorMap[lower] || 'default'
+
             return (
-              <span
+              <Tag
                 key={cls}
+                color={color}
                 style={{
-                  borderRadius: '17px',
+                  marginBottom: 4,
+                  borderRadius: '16px',
                   fontSize: '11px',
                   padding: '0 6px',
+                  lineHeight: '18px',
+                  whiteSpace: 'normal',
                 }}
               >
                 {label}
-              </span>
+              </Tag>
             )
           })}
         </div>
