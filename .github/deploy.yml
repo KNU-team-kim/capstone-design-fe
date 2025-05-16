@@ -1,0 +1,58 @@
+name: Deploy Next.js to EC2 on dev push
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  deploy:
+    name: Build and Deploy to EC2
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # - name: Set up Node.js
+      #   uses: actions/setup-node@v3
+      #   with:
+      #     node-version: 18
+      - name: Check Node v
+        run: node -v
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Create .env.local file
+        run: |
+          echo "NEXT_PUBLIC_ICE_SERVER_URL=${{ secrets.NEXT_PUBLIC_ICE_SERVER_URL }}" >> .env.local
+          echo "NEXT_PUBLIC_STREAM_SERVER_URL=${{ secrets.NEXT_PUBLIC_STREAM_SERVER_URL }}" >> .env.local
+          echo "NEXT_PUBLIC_RTSPTOWEB_HOST=${{ secrets.NEXT_PUBLIC_RTSPTOWEB_HOST }}" >> .env.local
+
+      - name: Remove .next cache
+        run: rm -rf .next
+
+      - name: Build Next.js app
+        run: npm run build
+
+      - name: Deploy via SSH
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.AWS_WEBSERVER_KEY }}
+          source: ".next,public,package.json,ecosystem.config.js,.env.local"
+          target: "~/app"
+
+      # - name: Restart server via SSH
+      #   uses: appleboy/ssh-action@v1.0.0
+      #   with:
+      #     host: ${{ secrets.HOST }}
+      #     username: ${{ secrets.USER }}
+      #     key: ${{ secrets.AWS_WEBSERVER_KEY }}
+      #     script: |
+      #       cd ~/app
+      #       npm install --production
+      #       pm2 delete all || true
+      #       pm2 start ecosystem.config.js --env production
