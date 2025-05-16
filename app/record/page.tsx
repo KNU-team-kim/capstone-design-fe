@@ -1,37 +1,20 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-
-import { LogEntry, fetchLogs } from '@/hooks/useLog'
+import { useLogQuery } from '@/hooks/useLog'
 
 export default function RecordPage() {
-  const [logs, setLogs] = useState<LogEntry[]>([])
-
-  useEffect(() => {
-    const loadLogs = async () => {
-      try {
-        const data = await fetchLogs(0, 10)
-        setLogs(data.logs)
-      } catch (error) {
-        console.error('로그 불러오기 실패:', error)
-      }
-    }
-
-    loadLogs()
-  }, [])
+  const { data } = useLogQuery(0, 10)
 
   return (
-    <main>
-      <h1>Record Page</h1>
-      <p>이곳은 딜레이 확인 페이지입니다.</p>
-
+    <div>
+      <h2>로그 목록</h2>
       <ul>
-        {logs.map((log) => (
+        {data?.logs.map((log) => (
           <li key={log.id}>
-            [{log.direction}], {log.createdAt}, {log.classes.join(', ')}
+            [{log.direction}], {log.createdAt}, {log.classes.join(', ')}, ({log.confidence})
           </li>
         ))}
       </ul>
-    </main>
+    </div>
   )
 }
