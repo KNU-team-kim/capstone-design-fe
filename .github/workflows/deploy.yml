@@ -33,23 +33,25 @@ jobs:
       - name: Build Next.js app
         run: npm run build
 
-      - name: Deploy via SSH
+      - name: Deploy entire project to EC2
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
           key: ${{ secrets.AWS_WEBSERVER_KEY }}
-          source: ".next,public,package.json,ecosystem.config.js,.env.local"
-          target: "~/app"
+          source: '.' # ✅ 전체 프로젝트 복사
+          target: '~/app' # 서버 내 배포 위치
+          rm: true
 
-      # - name: Restart server via SSH
-      #   uses: appleboy/ssh-action@v1.0.0
-      #   with:
-      #     host: ${{ secrets.HOST }}
-      #     username: ${{ secrets.USER }}
-      #     key: ${{ secrets.AWS_WEBSERVER_KEY }}
-      #     script: |
-      #       cd ~/app
-      #       npm install --production
-      #       pm2 delete all || true
-      #       pm2 start ecosystem.config.js --env production
+      - name: Build & Start App on EC2
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.AWS_WEBSERVER_KEY }}
+          script: |
+            cd ~/app
+            npm install --legacy-peer-deps
+            npm run build
+            pkill -f "next start" || true
+            nohup npm run start > out.log 2>&1 &
