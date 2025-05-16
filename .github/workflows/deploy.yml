@@ -30,9 +30,6 @@ jobs:
           echo "NEXT_PUBLIC_STREAM_SERVER_URL=${{ secrets.NEXT_PUBLIC_STREAM_SERVER_URL }}" >> .env.local
           echo "NEXT_PUBLIC_RTSPTOWEB_HOST=${{ secrets.NEXT_PUBLIC_RTSPTOWEB_HOST }}" >> .env.local
 
-      - name: Remove .next cache
-        run: rm -rf .next
-
       - name: Build Next.js app
         run: npm run build
 
