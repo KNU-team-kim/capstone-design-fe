@@ -1,6 +1,6 @@
 import TabBar from '@/components/TabBar'
 
-import ChakraWrapper from './chakra-provider'
+import ClientProviders from './ClientProviders'
 
 export const metadata = {
   title: 'capstone_design_fe',
@@ -15,7 +15,7 @@ export default function RootLayout({
   return (
     <html lang="kr" style={{ overflow: 'hidden' }}>
       <body style={{ margin: 0, height: '100%', overflow: 'hidden' }}>
-        <ChakraWrapper>
+        <ClientProviders>
           <div
             style={{
               display: 'flex',
@@ -40,14 +40,15 @@ export default function RootLayout({
                 flex: 1,
                 display: 'flex',
                 justifyContent: 'center',
-                alignItems: 'center',
+                alignItems: 'flex-start',
+                padding: '0',
                 overflow: 'hidden',
               }}
             >
               {children}
             </div>
           </div>
-        </ChakraWrapper>
+        </ClientProviders>
       </body>
     </html>
   )
