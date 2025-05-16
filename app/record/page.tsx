@@ -1,20 +1,27 @@
 'use client'
 
+import { useState } from 'react'
+
+import RecordTable from '@/components/RecordTable'
 import { useLogQuery } from '@/hooks/useLog'
 
 export default function RecordPage() {
-  const { data } = useLogQuery(0, 10)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
+
+  const { data, isLoading } = useLogQuery(currentPage - 1, pageSize)
 
   return (
-    <div>
-      <h2>로그 목록</h2>
-      <ul>
-        {data?.logs.map((log) => (
-          <li key={log.id}>
-            [{log.direction}], {log.createdAt}, {log.classes.join(', ')}, ({log.confidence})
-          </li>
-        ))}
-      </ul>
+    <div style={{ width: '95%', maxWidth: '1440px', padding: '0 4px' }}>
+      {!isLoading && data && (
+        <RecordTable
+          logs={data.logs}
+          total={data.totalPage * pageSize}
+          pageSize={pageSize}
+          current={currentPage}
+          onPageChange={() => {}}
+        />
+      )}
     </div>
   )
 }
