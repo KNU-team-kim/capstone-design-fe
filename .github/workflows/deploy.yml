@@ -43,7 +43,7 @@ jobs:
           target: '~/app' # 서버 내 배포 위치
           rm: true
 
-      - name: Build & Start App on EC2
+      - name: Start app via pm2
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.HOST }}
@@ -53,5 +53,5 @@ jobs:
             cd ~/app
             npm install --legacy-peer-deps
             npm run build
-            pkill -f "next start" || true
-            nohup npm run start > out.log 2>&1 &
+            pm2 delete nextjs-app || true
+            pm2 start node_modules/next/dist/bin/next --name "nextjs-app" -- start -p 3000
