@@ -25,7 +25,7 @@ export const useLogQuery = (
     queryKey: ['logs', page, size, classType, directionType],
     queryFn: async () => {
       const response = await axios.get<GetLogsResponse>(
-        'http://15.164.163.252:8080/api/logs',
+        'https://mstream-be.kro.kr/api/logs',
         {
           params: {
             page,
