@@ -104,12 +104,7 @@ const Webcam = () => {
       }
     }, 500)
     return () => clearInterval(checkReadyInterval)
-  }, [
-    left.videoRef.current,
-    back.videoRef.current,
-    front.videoRef.current,
-    right.videoRef.current,
-  ])
+  }, [left.videoRef, back.videoRef, front.videoRef, right.videoRef])
 
   const streams = [
     { ref: front.videoRef, direction: 'front' as const },
