@@ -29,6 +29,9 @@ jobs:
           echo "NEXT_PUBLIC_ICE_SERVER_URL=${{ secrets.NEXT_PUBLIC_ICE_SERVER_URL }}" >> .env.local
           echo "NEXT_PUBLIC_STREAM_SERVER_URL=${{ secrets.NEXT_PUBLIC_STREAM_SERVER_URL }}" >> .env.local
           echo "NEXT_PUBLIC_RTSPTOWEB_HOST=${{ secrets.NEXT_PUBLIC_RTSPTOWEB_HOST }}" >> .env.local
+          echo "NEXT_PUBLIC_TURN_USERNAME=${{ secrets.NEXT_PUBLIC_TURN_USERNAME }}" >> .env.local
+          echo "NEXT_PUBLIC_TURN_PASSWORD=${{ secrets.NEXT_PUBLIC_TURN_PASSWORD }}" >> .env.local
+          echo "NEXT_PUBLIC_SIGNALING_URL=${{ secrets.NEXT_PUBLIC_SIGNALING_URL }}" >> .env.local
 
       - name: Build Next.js app
         run: npm run build
