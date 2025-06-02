@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import CameraBox from '@/components/CameraBox'
 import DirectionTag, { Direction } from '@/components/DirectionTag'
@@ -19,6 +19,7 @@ export default function WebcamAiortc() {
   const videoRef3 = useRef<HTMLVideoElement | null>(null)
 
   const videoRefs = [videoRef0, videoRef1, videoRef2, videoRef3]
+  const [expandedCam, setExpandedCam] = useState<number | null>(null)
 
   useEffect(() => {
     videoRefs.forEach((ref, index) => {
@@ -28,28 +29,22 @@ export default function WebcamAiortc() {
     })
   }, [])
 
+  const handleBackgroundClick = () => {
+    if (expandedCam !== null) setExpandedCam(null)
+  }
+
   const detectColorChange = (video: HTMLVideoElement, direction: Direction) => {
     const canvas = document.createElement('canvas')
     const ctx = canvas.getContext('2d')
     let lastColor = ''
 
     const analyze = () => {
-      if (!ctx) {
-        console.warn(`[${direction}] ctx 생성 실패`)
-        requestAnimationFrame(analyze)
-        return
-      }
-
-      if (video.readyState < 2) {
-        console.log(
-          `[${direction}] video.readyState=${video.readyState} (재생 준비 안됨)`
-        )
-        requestAnimationFrame(analyze)
-        return
-      }
-
-      if (video.videoWidth === 0 || video.videoHeight === 0) {
-        console.log(`[${direction}] video width/height가 0`)
+      if (
+        !ctx ||
+        video.readyState < 2 ||
+        video.videoWidth === 0 ||
+        video.videoHeight === 0
+      ) {
         requestAnimationFrame(analyze)
         return
       }
@@ -84,48 +79,100 @@ export default function WebcamAiortc() {
       requestAnimationFrame(analyze)
     }
 
-    console.log(`[${direction}] detectColorChange 시작`)
     analyze()
   }
 
   return (
     <div
-      style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+      style={{
+        position: 'relative',
+        width: '100%',
+        height: '100%',
+      }}
     >
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gridTemplateRows: '1fr 1fr',
-          gap: '10px',
-          width: '90vw',
-          maxWidth: '1460px',
-          maxHeight: 'calc(100vh - 120px)',
-        }}
-      >
-        {[0, 1, 2, 3].map((cam) => (
-          <div
-            key={cam}
-            style={{
-              position: 'relative',
-              width: '100%',
-              height: '100%',
-              backgroundColor: '#000',
-              borderRadius: '8px',
-              overflow: 'hidden',
-              aspectRatio: '16 / 9',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <CameraBox camNum={cam} videoRef={videoRefs[cam]} />
-            <div style={{ position: 'absolute', bottom: '8px', right: '8px' }}>
-              <DirectionTag direction={DIRECTION_LABELS[cam]} />
-            </div>
+      {expandedCam !== null && (
+        <div
+          onClick={handleBackgroundClick}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            zIndex: 10,
+            width: '100vw',
+            height: '100vh',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          }}
+        />
+      )}
+
+      {expandedCam !== null && (
+        <div
+          onClick={(e) => e.stopPropagation()}
+          style={{
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: '90vw',
+            maxWidth: '1280px',
+            aspectRatio: '16 / 9',
+            backgroundColor: '#000',
+            borderRadius: '12px',
+            overflow: 'hidden',
+            zIndex: 20,
+            boxShadow: '0 0 20px rgba(0,0,0,0.7)',
+          }}
+        >
+          <CameraBox camNum={expandedCam} videoRef={videoRefs[expandedCam]} />
+          <div style={{ position: 'absolute', bottom: '8px', right: '8px' }}>
+            <DirectionTag direction={DIRECTION_LABELS[expandedCam]} />
           </div>
-        ))}
-      </div>
+        </div>
+      )}
+
+      {expandedCam === null && (
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gridTemplateRows: '1fr 1fr',
+            gap: '10px',
+            width: '90vw',
+            maxWidth: '1460px',
+            maxHeight: 'calc(100vh - 120px)',
+          }}
+        >
+          {[0, 1, 2, 3].map((cam) => (
+            <div
+              key={cam}
+              onClick={(e) => {
+                e.stopPropagation()
+                setExpandedCam(cam)
+              }}
+              style={{
+                position: 'relative',
+                width: '100%',
+                height: '100%',
+                backgroundColor: '#000',
+                borderRadius: '8px',
+                overflow: 'hidden',
+                aspectRatio: '16 / 9',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+              }}
+            >
+              <CameraBox camNum={cam} videoRef={videoRefs[cam]} />
+              <div
+                style={{ position: 'absolute', bottom: '8px', right: '8px' }}
+              >
+                <DirectionTag direction={DIRECTION_LABELS[cam]} />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
