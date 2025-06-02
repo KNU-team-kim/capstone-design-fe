@@ -2,7 +2,7 @@
 
 import { Badge } from '@chakra-ui/react'
 
-type Direction = 'front' | 'back' | 'left' | 'right'
+export type Direction = 'front' | 'back' | 'left' | 'right'
 
 interface Props {
   direction: Direction
