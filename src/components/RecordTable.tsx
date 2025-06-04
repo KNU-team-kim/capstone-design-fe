@@ -35,8 +35,31 @@ const RecordTable = ({
       title: 'Image',
       dataIndex: 'imageUrl',
       key: 'image',
-      width: 85,
-      render: (url: string) => <img src={url} alt="캡쳐 이미지" />,
+      width: 100,
+      render: (url: string) => (
+        <div
+          style={{
+            width: '100%',
+            aspectRatio: '16 / 9',
+            borderRadius: '4px',
+            overflow: 'hidden',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: '40px',
+          }}
+        >
+          <img
+            src={url}
+            alt="이미지"
+            style={{
+              maxHeight: '100%',
+              maxWidth: '100%',
+              objectFit: 'contain',
+            }}
+          />
+        </div>
+      ),
     },
     {
       title: 'Direction',
