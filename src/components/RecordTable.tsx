@@ -1,5 +1,7 @@
 'use client'
 
+import { useEffect, useRef, useState } from 'react'
+
 import { Table, Tag } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 
@@ -30,13 +32,54 @@ const RecordTable = ({
   total,
   onPageChange,
 }: Props) => {
+  const tableWrapperRef = useRef<HTMLDivElement>(null)
+  const [scale, setScale] = useState(1)
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (tableWrapperRef.current) {
+        const parentWidth = tableWrapperRef.current.offsetWidth
+        const baseWidth = 1200
+        const newScale = Math.min(1, parentWidth / baseWidth)
+        setScale(newScale)
+      }
+    }
+
+    handleResize()
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
   const columns: ColumnsType<LogEntry> = [
     {
       title: 'Image',
       dataIndex: 'imageUrl',
       key: 'image',
-      width: 85,
-      render: (url: string) => <img src={url} alt="캡쳐 이미지" />,
+      width: 100,
+      render: (url: string) => (
+        <div
+          style={{
+            width: '100%',
+            aspectRatio: '16 / 9',
+            borderRadius: '4px',
+            overflow: 'hidden',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: '40px',
+          }}
+        >
+          <img
+            src={url}
+            alt="이미지"
+            style={{
+              maxHeight: '100%',
+              maxWidth: '100%',
+              objectFit: 'contain',
+            }}
+          />
+        </div>
+      ),
     },
     {
       title: 'Direction',
@@ -107,14 +150,22 @@ const RecordTable = ({
 
   return (
     <div
+      ref={tableWrapperRef}
       style={{
-        display: 'flex',
-        justifyContent: 'center',
         width: '100%',
-        padding: 0,
+        overflow: 'hidden',
+        padding: '0 8px',
+        boxSizing: 'border-box',
       }}
     >
-      <div style={{ width: '100%', maxWidth: '1200px' }}>
+      <div
+        style={{
+          transform: `scale(${scale})`,
+          transformOrigin: 'top left',
+          width: '1200px',
+          margin: '0 auto',
+        }}
+      >
         <Table
           rowKey="id"
           columns={columns}
