@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 
-import { Table, Tag } from 'antd'
+import { Modal, Table, Tag } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 
 import { LogEntry } from '@/hooks/useLog'
@@ -34,6 +34,7 @@ const RecordTable = ({
 }: Props) => {
   const tableWrapperRef = useRef<HTMLDivElement>(null)
   const [scale, setScale] = useState(1)
+  const [selectedImageUrl, setSelectedImageUrl] = useState<string | null>(null)
 
   useEffect(() => {
     const handleResize = () => {
@@ -67,7 +68,9 @@ const RecordTable = ({
             alignItems: 'center',
             justifyContent: 'center',
             height: '40px',
+            cursor: 'pointer',
           }}
+          onClick={() => setSelectedImageUrl(url)}
         >
           <img
             src={url}
@@ -181,6 +184,45 @@ const RecordTable = ({
           }}
         />
       </div>
+
+      <Modal
+        open={!!selectedImageUrl}
+        footer={null}
+        onCancel={() => setSelectedImageUrl(null)}
+        centered
+        width="80%"
+        bodyStyle={{
+          textAlign: 'center',
+          padding: 0,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        {selectedImageUrl && (
+          <div
+            style={{
+              width: '100%',
+              aspectRatio: '16 / 9',
+              position: 'relative',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <img
+              src={selectedImageUrl}
+              alt="확대 이미지"
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'contain',
+                borderRadius: '8px',
+              }}
+            />
+          </div>
+        )}
+      </Modal>
     </div>
   )
 }

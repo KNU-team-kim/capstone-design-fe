@@ -3,8 +3,8 @@
 import { useEffect, useRef, useState } from 'react'
 
 import CameraBox from '@/components/CameraBox'
-import DirectionTag, { Direction } from '@/components/DirectionTag'
 import DelayLabel from '@/components/DelayLabel'
+import DirectionTag, { Direction } from '@/components/DirectionTag'
 
 const DIRECTION_LABELS: Record<number, Direction> = {
   0: 'front',
@@ -21,7 +21,12 @@ export default function WebcamAiortc() {
 
   const videoRefs = [videoRef0, videoRef1, videoRef2, videoRef3]
   const [expandedCam, setExpandedCam] = useState<number | null>(null)
-  const [delays, setDelays] = useState<(number | null)[]>([null, null, null, null])
+  const [delays, setDelays] = useState<(number | null)[]>([
+    null,
+    null,
+    null,
+    null,
+  ])
 
   const handleBackgroundClick = () => {
     if (expandedCam !== null) setExpandedCam(null)
@@ -35,7 +40,11 @@ export default function WebcamAiortc() {
     })
   }
 
-  const detectColorChange = (video: HTMLVideoElement, direction: Direction, camIndex: number) => {
+  const detectColorChange = (
+    video: HTMLVideoElement,
+    direction: Direction,
+    camIndex: number
+  ) => {
     const canvas = document.createElement('canvas')
     const ctx = canvas.getContext('2d')
     let lastColor = ''
@@ -179,7 +188,9 @@ export default function WebcamAiortc() {
               }}
             >
               <CameraBox camNum={cam} videoRef={videoRefs[cam]} />
-              <div style={{ position: 'absolute', bottom: '8px', right: '8px' }}>
+              <div
+                style={{ position: 'absolute', bottom: '8px', right: '8px' }}
+              >
                 <DirectionTag direction={DIRECTION_LABELS[cam]} />
               </div>
               <div style={{ position: 'absolute', top: '8px', left: '8px' }}>

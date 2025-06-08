@@ -1,6 +1,6 @@
 'use client'
 
-import { BiCamera, BiCodeAlt, BiDetail } from 'react-icons/bi'
+import { BiCamera, BiDetail } from 'react-icons/bi'
 
 import { Button, HStack, Icon } from '@chakra-ui/react'
 import { usePathname, useRouter } from 'next/navigation'
@@ -8,7 +8,6 @@ import { usePathname, useRouter } from 'next/navigation'
 const tabs = [
   { label: 'Camera', icon: BiCamera, route: '/' },
   { label: 'Record', icon: BiDetail, route: '/record' },
-  { label: 'Dev', icon: BiCodeAlt, route: '/dev' },
 ]
 
 const TabBar = () => {
