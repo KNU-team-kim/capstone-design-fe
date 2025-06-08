@@ -12,7 +12,7 @@ const DelayLabel = ({ delay }: Props) => {
   return (
     <Box
       bg="gray.100"
-      borderRadius="xl"
+      borderRadius="lg"
       px={3}
       py={1}
       fontSize="sm"

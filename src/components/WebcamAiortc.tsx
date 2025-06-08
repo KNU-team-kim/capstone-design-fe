@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 
 import CameraBox from '@/components/CameraBox'
 import DirectionTag, { Direction } from '@/components/DirectionTag'
+import DelayLabel from '@/components/DelayLabel'
 
 const DIRECTION_LABELS: Record<number, Direction> = {
   0: 'front',
@@ -20,20 +21,21 @@ export default function WebcamAiortc() {
 
   const videoRefs = [videoRef0, videoRef1, videoRef2, videoRef3]
   const [expandedCam, setExpandedCam] = useState<number | null>(null)
-
-  useEffect(() => {
-    videoRefs.forEach((ref, index) => {
-      if (ref.current) {
-        detectColorChange(ref.current, DIRECTION_LABELS[index])
-      }
-    })
-  }, [])
+  const [delays, setDelays] = useState<(number | null)[]>([null, null, null, null])
 
   const handleBackgroundClick = () => {
     if (expandedCam !== null) setExpandedCam(null)
   }
 
-  const detectColorChange = (video: HTMLVideoElement, direction: Direction) => {
+  const updateDelay = (camIndex: number, delay: number) => {
+    setDelays((prev) => {
+      const next = [...prev]
+      next[camIndex] = delay
+      return next
+    })
+  }
+
+  const detectColorChange = (video: HTMLVideoElement, direction: Direction, camIndex: number) => {
     const canvas = document.createElement('canvas')
     const ctx = canvas.getContext('2d')
     let lastColor = ''
@@ -74,6 +76,8 @@ export default function WebcamAiortc() {
         console.log(
           `[Delay] ${direction}: ${currentColor}\n  감지시각: ${now.toISOString()}\n  기준시각: ${expected.toISOString()}\n  지연시간(ms): ${delayMs}`
         )
+
+        updateDelay(camIndex, delayMs)
       }
 
       requestAnimationFrame(analyze)
@@ -81,6 +85,14 @@ export default function WebcamAiortc() {
 
     analyze()
   }
+
+  useEffect(() => {
+    videoRefs.forEach((ref, index) => {
+      if (ref.current) {
+        detectColorChange(ref.current, DIRECTION_LABELS[index], index)
+      }
+    })
+  }, [])
 
   return (
     <div
@@ -127,6 +139,9 @@ export default function WebcamAiortc() {
           <div style={{ position: 'absolute', bottom: '8px', right: '8px' }}>
             <DirectionTag direction={DIRECTION_LABELS[expandedCam]} />
           </div>
+          <div style={{ position: 'absolute', top: '8px', left: '8px' }}>
+            <DelayLabel delay={delays[expandedCam]} />
+          </div>
         </div>
       )}
 
@@ -164,10 +179,11 @@ export default function WebcamAiortc() {
               }}
             >
               <CameraBox camNum={cam} videoRef={videoRefs[cam]} />
-              <div
-                style={{ position: 'absolute', bottom: '8px', right: '8px' }}
-              >
+              <div style={{ position: 'absolute', bottom: '8px', right: '8px' }}>
                 <DirectionTag direction={DIRECTION_LABELS[cam]} />
+              </div>
+              <div style={{ position: 'absolute', top: '8px', left: '8px' }}>
+                <DelayLabel delay={delays[cam]} />
               </div>
             </div>
           ))}
